@@ -7,9 +7,32 @@ class CreateTransactionService {
   constructor(transactionsRepository: TransactionsRepository) {
     this.transactionsRepository = transactionsRepository;
   }
-
-  public execute(): Transaction {
+  // armazena toda regra de negocio referente a cada processo.
+  public execute({ title, value, type }: Transaction) {
     // TODO
+    if (type !== 'income' && type !== 'outcome') {
+      throw new Error('invalid type!');
+    }
+
+    const balance = this.transactionsRepository.getBalance();
+
+    if (type === 'outcome') {
+      if (balance.total < value) {
+        throw new Error('not enough balance!');
+      }
+    }
+
+    /*
+    const transaction = new Transaction({
+      title,
+      value,
+      type,
+    });
+    */
+
+    const newTransaction = this.transactionsRepository.create({ title, value, type });
+
+    return newTransaction;
   }
 }
 
